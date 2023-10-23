@@ -10,6 +10,10 @@ beforeEach(async () => {
     await db.seed.run()
 })
 
+afterAll(async () => {
+    await db.destroy()
+})
+
 test('environment is testing', () => {
     expect(process.env.NODE_ENV).toBe('testing')
 })
@@ -48,5 +52,22 @@ describe('insert', () => {
         await Hobbit.insert(bilbo)
         const records = await db('hobbits')
         expect(records).toHaveLength(5)
+    })
+})
+
+describe('update', () => {
+    test('updates information within hobbit database', async () => {
+        await Hobbit.insert({name: 'gaffer'})
+        const updated = await Hobbit.update(1, {name: 'sam'})
+        expect(updated).toMatchObject({id: 1, name: 'sam'})
+    })
+})
+
+describe('remove()', () => {
+    test('deletes hobbit from table by id', async () => {
+        await Hobbit.remove(1)
+        const hobbits = await db('hobbits')
+        expect(hobbits).toHaveLength(3)
+
     })
 })
